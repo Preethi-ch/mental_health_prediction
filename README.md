@@ -1,107 +1,105 @@
-# Mental Health Prediction Model
+#  Mental Health Prediction Model
 
-## Overview
-This project involves building a machine learning model to predict mental health outcomes based on a dataset containing various features related to personal, professional, and health-related factors. 
-The model uses a Random Forest Classifier and is trained in a Google Colab.
+##  Overview
 
-
-## Dataset
-The dataset used for training includes the following features:
-- **Age**: Numeric value representing the individual's age.
-- **Gender**: Categorical value representing the individual's gender.
-- **Self-employed**: Indicates whether the individual is self-employed.
-- **Family history**: Indicates whether the individual has a family history of mental illness.
-- **Treatment**: Indicates whether the individual is currently undergoing treatment for mental health issues.
-- **Work interference**: Indicates how mental health issues interfere with work.
-- **Number of employees**: Indicates the size of the company the individual works for.
-- **Remote work**: Indicates if the individual works remotely.
-- **Tech company**: Indicates if the individual works in a tech company.
-- **Benefits**: Indicates if the company provides mental health benefits.
-- **Care options**: Indicates if mental health care options are available.
-- **Wellness program**: Indicates if the company has a wellness program.
-- **Seek help**: Indicates if resources to seek help are provided.
-- **Anonymity**: Indicates if anonymity is guaranteed.
-- **Leave**: Indicates the ease of taking leave for mental health.
-- **Mental health consequence**: Indicates the potential consequence of discussing mental health issues.
-- **Physical health consequence**: Indicates the potential consequence of discussing physical health issues.
-- **Coworkers**: Indicates comfort in talking to coworkers about mental health.
-- **Supervisor**: Indicates comfort in talking to supervisors about mental health.
-- **Mental health interview**: Indicates if discussing mental health in an interview is acceptable.
-- **Physical health interview**: Indicates if discussing physical health in an interview is acceptable.
-- **Mental vs Physical**: Indicates whether mental health is prioritized as much as physical health.
-- **Observed consequence**: Indicates if negative consequences are observed for discussing mental health.
-
-The dataset contains categorical and numeric features. Categorical features are encoded into numeric values before training.
-
-
-## Model Training
-
-### Steps
-1. **Data Preprocessing**:
-   - Handle missing values.
-   - Encode categorical variables using consistent mappings.
-   - Normalize numeric variables if required.
-
-2. **Model Selection**:
-   - Use `RandomForestClassifier` as the primary model.
-   - Perform hyperparameter tuning using `RandomizedSearchCV`.
-
-3. **Training**:
-   - Split the data into training and testing sets.
-   - Train the Random Forest model on the training set.
-   - Evaluate the model using accuracy and other metrics on the test set.
-
-4. **Saving the Model**:
-   - Save the trained model using `joblib` for deployment.
-
-
-## Deployment
-
-The model is deployed using a **Streamlit** application, which provides an interactive interface for users to input data and receive predictions. 
-The app loads the saved model (`random_forest_model.pkl`) and performs real-time predictions.
+This project focuses on building a machine learning model to predict whether an individual is likely to need mental health treatment based on personal and workplace-related features. The final model is deployed using a Streamlit web application for real-time predictions.
 
 
 
-## Streamlit Application
+##  Dataset
 
-### Features
-1. **User Input Form**:
-   - Allows users to input data for all the features required by the model.
-2. **Prediction**:
-   - Processes the input data and returns a prediction (e.g., whether the individual is likely to have mental health issues).
-3. **Error Handling**:
-   - Handles version mismatches and feature mapping errors gracefully.
+The dataset consists of responses to a mental health survey and includes a mix of numeric and categorical features.
 
-### Steps to Run the App
-1. Install necessary libraries:
+### Features Used in the Model:
+
+* **Age**: Numerical age (18–100).
+* **Gender**: Categorical — `female`, `male`, `trans`.
+* **Family History**: Whether the individual has a family history of mental illness.
+* **Work Interference**: Degree to which mental health affects work (`Never`, `Rarely`, `Sometimes`, `Often`, `Don't know`).
+* **Ease of Leave**: How easy it is to take leave for mental health reasons.
+* **Anonymity**: Whether anonymity is protected by the employer.
+* **Mental Health Consequence**: Whether discussing mental health could have negative consequences.
+* **Benefits**: Whether mental health benefits are provided by the employer.
+
+Other columns in the dataset were removed after feature analysis and tuning.
+
+
+
+##  Model Training
+
+###  Steps Followed:
+
+1. **Data Cleaning**
+
+   * Removed outliers in age (e.g., `99999999999`, negatives).
+   * Filtered valid ages between 18 and 100.
+   * Handled missing/null entries.
+
+2. **Encoding**
+
+   * Encoded categorical features using consistent label encodings.
+
+3. **Feature Selection**
+
+   * Selected only the most relevant 8 features based on impact and correlation.
+
+4. **Model Building**
+
+   * Used **RandomForestClassifier**.
+   * Performed **hyperparameter tuning** using both `GridSearchCV` and `RandomizedSearchCV`.
+
+5. **Evaluation**
+
+   * Evaluated on test set using accuracy, confusion matrix, and classification report.
+   * Achieved \~80–82% accuracy.
+
+6. **Model Saving**
+
+   * Final trained model saved using `joblib` as `mental_health_model.pkl`.
+
+
+
+##  Deployment with Streamlit
+
+### Features:
+
+* Simple UI for entering user responses.
+* Model prediction for mental health treatment need.
+* Uses `model.feature_names_in_` to ensure feature consistency.
+* Handles invalid inputs or mismatches gracefully.
+
+### To Run the App:
+
+1.  Install dependencies:
+
    ```bash
-   pip install streamlit pandas joblib scikit-learn
+   pip install streamlit pandas scikit-learn joblib
    ```
-2. Run the app using the command:
+
+2.  Run the Streamlit app:
+
    ```bash
    streamlit run app.py
    ```
-3. Open the provided URL in a web browser to interact with the app.
+
+3.  Open the URL in your browser (usually `http://localhost:8501`).
 
 
 
-## Challenges and Solutions
-1. **Feature Mapping Mismatch**:
-   - Ensure consistent mapping of categorical variables between training and deployment environments.
-2. **Version Mismatch**:
-   - Align `scikit-learn` versions used during training and deployment.
-   - Re-train the model if necessary to avoid compatibility issues.
-3. **Model Compatibility**:
-   - Use `model.feature_names_in_` to align the feature order in the deployment code.
+##  Challenges and Fixes
 
+| Problem                        | Solution                                                |
+| ------------------------------ | ------------------------------------------------------- |
+| **Categorical mapping errors** | Used consistent mappings for all select fields          |
+| **Feature mismatch**           | Used `model.feature_names_in_` to match input order     |
+| **Imbalanced predictions**     | Used selected features with high information gain       |
+| **Overfitting/Underfitting**   | Tuned model via `RandomizedSearchCV` and `GridSearchCV` |
 
+---
 
-## Future Enhancements
-1. **Model Improvement**:
-   - Experiment with additional models and ensemble techniques.
-   - Use feature selection to improve model performance.
-2. **Dataset Expansion**:
-   - Include more diverse data to generalize predictions.
-3. **UI Enhancements**:
-   - Make the Streamlit app more interactive and visually appealing.
-   - Add visualizations for predictions and model explanations.
+##  Future Enhancements
+
+*  Add model explanation using SHAP or LIME.
+*  Improve UI with visual insights or risk levels.
+*  Test with real-world diverse data.
+*  Experiment with deep learning or ensemble stacking.
